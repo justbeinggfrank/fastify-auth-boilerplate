@@ -4,6 +4,7 @@ import jwtPlugin from './plugins/jwt';
 import 'dotenv/config';
 import { authRoutes } from './routes/auth';
 import fastifyQs from 'fastify-qs';
+import fastifyRateLimit from '@fastify/rate-limit';
 
 const app: FastifyInstance = Fastify({
   logger: {
@@ -15,6 +16,13 @@ const app: FastifyInstance = Fastify({
     //   },
     // },
   },
+});
+
+// Register rate limiting plugin
+app.register(fastifyRateLimit, {
+  max: 100, // max requests
+  timeWindow: '1 minute', // per minute
+  allowList: ['127.0.0.1'], // optional: allow unlimited for localhost
 });
 
 app.register(jwtPlugin);
