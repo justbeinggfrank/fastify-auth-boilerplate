@@ -82,14 +82,15 @@ describe('User Routes', () => {
         expect(body.message).toBe('User not found');
     });
 
-    it('should return 500 for invalid user ID', async () => {
+    it('should return 400 for invalid user ID', async () => {
         const response = await app.inject({
             method: 'GET',
             url: '/users/invalid-format', // Invalid ID format
         });
-        expect(response.statusCode).toBe(500);
+        expect(response.statusCode).toBe(400);
         const body = JSON.parse(response.body);
-        expect(body.message).toBe('Internal server error');
+        expect(body.message).toBe('Invalid user id');
+        expect(body.errors).toBeDefined();
     }
     );
 

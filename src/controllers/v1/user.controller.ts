@@ -1,5 +1,23 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { userService } from '../../services/v1/user.service';
+import { z } from 'zod';
+
+// Zod schemas
+const userIdParamSchema = z.object({
+  id: z.string().regex(/^\d+$/),
+});
+
+const createUserSchema = z.object({
+  name: z.string().min(1).max(100).trim(),
+  email: z.string().email().trim(),
+  role: z.enum(['user', 'admin', 'superadmin']).optional(),
+});
+
+const updateUserSchema = z.object({
+  name: z.string().min(1).max(100).trim().optional(),
+  email: z.string().email().trim().optional(),
+  role: z.enum(['user', 'admin', 'superadmin']).optional(),
+});
 
 export const userController = {
   getAllUsers: async (request: FastifyRequest, reply: FastifyReply) => {
@@ -10,7 +28,13 @@ export const userController = {
     reply.send(users);
   },
   getSingleUser: async (request: FastifyRequest, reply: FastifyReply) => {
-    const { id } = request.params as { id: string };
+    const parseResult = userIdParamSchema.safeParse(request.params);
+    if (!parseResult.success) {
+      return reply
+        .status(400)
+        .send({ message: 'Invalid user id', errors: parseResult.error.errors });
+    }
+    const { id } = parseResult.data;
     const [user, error] = await userService.getSingleUser(id);
     if (error) {
       return reply.status(500).send({ message: 'Internal server error' });
@@ -21,11 +45,11 @@ export const userController = {
     reply.send(user);
   },
   createUser: async (request: FastifyRequest, reply: FastifyReply) => {
-    const { name, email, role } = request.body as {
-      name: string;
-      email: string;
-      role?: string;
-    };
+    const parseResult = createUserSchema.safeParse(request.body);
+    if (!parseResult.success) {
+      return reply.status(400).send({ message: 'Invalid input', errors: parseResult.error.errors });
+    }
+    const { name, email, role } = parseResult.data;
     const [user, error] = await userService.createUser({ name, email, role });
     if (error) {
       return reply.status(500).send({ message: 'Internal server error' });
@@ -33,9 +57,19 @@ export const userController = {
     reply.status(201).send(user);
   },
   updateUser: async (request: FastifyRequest, reply: FastifyReply) => {
-    const { id } = request.params as { id: string };
-    const { name, email } = request.body as { name?: string; email?: string };
-    const [user, error] = await userService.updateUser(id, { name, email });
+    const paramResult = userIdParamSchema.safeParse(request.params);
+    if (!paramResult.success) {
+      return reply
+        .status(400)
+        .send({ message: 'Invalid user id', errors: paramResult.error.errors });
+    }
+    const bodyResult = updateUserSchema.safeParse(request.body);
+    if (!bodyResult.success) {
+      return reply.status(400).send({ message: 'Invalid input', errors: bodyResult.error.errors });
+    }
+    const { id } = paramResult.data;
+    const { name, email, role } = bodyResult.data;
+    const [user, error] = await userService.updateUser(id, { name, email, role });
     if (error) {
       return reply.status(500).send({ message: 'Internal server error' });
     }
@@ -45,7 +79,13 @@ export const userController = {
     reply.send(user);
   },
   deleteUser: async (request: FastifyRequest, reply: FastifyReply) => {
-    const { id } = request.params as { id: string };
+    const parseResult = userIdParamSchema.safeParse(request.params);
+    if (!parseResult.success) {
+      return reply
+        .status(400)
+        .send({ message: 'Invalid user id', errors: parseResult.error.errors });
+    }
+    const { id } = parseResult.data;
     const [user, error] = await userService.deleteUser(id);
     if (error) {
       return reply.status(500).send({ message: 'Internal server error' });
@@ -84,7 +124,13 @@ export const userController = {
     });
   },
   enableUser: async (request: FastifyRequest, reply: FastifyReply) => {
-    const { id } = request.params as { id: string };
+    const parseResult = userIdParamSchema.safeParse(request.params);
+    if (!parseResult.success) {
+      return reply
+        .status(400)
+        .send({ message: 'Invalid user id', errors: parseResult.error.errors });
+    }
+    const { id } = parseResult.data;
     const [user, error] = await userService.enableUser(id);
     if (error) {
       return reply.status(500).send({ message: 'Internal server error' });
@@ -95,7 +141,13 @@ export const userController = {
     reply.send({ message: 'User enabled', user });
   },
   disableUser: async (request: FastifyRequest, reply: FastifyReply) => {
-    const { id } = request.params as { id: string };
+    const parseResult = userIdParamSchema.safeParse(request.params);
+    if (!parseResult.success) {
+      return reply
+        .status(400)
+        .send({ message: 'Invalid user id', errors: parseResult.error.errors });
+    }
+    const { id } = parseResult.data;
     const [user, error] = await userService.disableUser(id);
     if (!user) {
       return reply.status(404).send({ message: 'User not found' });
