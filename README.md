@@ -1,10 +1,11 @@
-# Fastify TypeScript MySQL App
-This is a boilerplate setup for a backend app using **Fastify**, **TypeScript**, **MySQL**, and **Prisma** — complete with live reload (Nodemon) and testing (Jest).
+# Fastify TypeScript MySQL Prisma Nodemailer Boilerplate
+This is a boilerplate setup for a backend app using **Fastify**, **TypeScript**, **MySQL**, **Nodemailer** and **Prisma** — complete with live reload (Nodemon) and testing (Jest).
 
 ## 📦 Dependencies
 
 ### Runtime
 fastify
+nodemailer
 
 ### Development
 nodemon

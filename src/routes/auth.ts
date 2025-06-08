@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { prisma } from '../prisma/client';
 import bcrypt from 'bcrypt';
+import { sendMail } from '../utils/mailer';
 
 export async function authRoutes(fastify: FastifyInstance) {
   fastify.post('/register', async (request, reply) => {
@@ -132,8 +133,21 @@ export async function authRoutes(fastify: FastifyInstance) {
     );
 
     // Here you would send the resetToken via email to the user
-    // For demo, just return the token (not secure for production)
-    reply.send({ message: 'Reset token generated', resetToken });
+
+    try {
+      await sendMail({
+        to: user.email,
+        subject: 'Password Reset',
+        text: `Your reset token: ${resetToken}`,
+        html: `<p>Your reset token: <b>${resetToken}</b></p>`,
+      });
+
+      return reply.send({ message: 'Reset email sent successfully' });
+    } catch (error) {
+      console.error('Error sending reset email:', error);
+      return reply.code(500).send({ message: 'Failed to send reset email' });
+    }
+
   });
 
   // Reset password using token
