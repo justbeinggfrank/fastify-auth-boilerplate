@@ -69,7 +69,11 @@ export const authController = {
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) return reply.code(401).send({ message: 'Invalid credentials' });
 
-    const token = (request.server as any).jwt.sign({ id: user.id, email: user.email, role: user.role });
+    const token = (request.server as any).jwt.sign({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
     reply.send({ token });
   },
 
@@ -166,7 +170,11 @@ export const authController = {
     const { resetToken, newPassword } = parseResult.data;
 
     try {
-      const payload = (request.server as any).jwt.verify(resetToken) as { id: string; email: string; type: string };
+      const payload = (request.server as any).jwt.verify(resetToken) as {
+        id: string;
+        email: string;
+        type: string;
+      };
       if (payload.type !== 'reset') {
         return reply.code(400).send({ message: 'Invalid reset token' });
       }

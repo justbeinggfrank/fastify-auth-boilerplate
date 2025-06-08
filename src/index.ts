@@ -8,7 +8,7 @@ import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyCors from '@fastify/cors';
 
-const app: FastifyInstance = Fastify({
+export const app: FastifyInstance = Fastify({
   logger: {
     level: 'debug',
   },
