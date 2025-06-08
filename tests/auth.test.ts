@@ -14,6 +14,7 @@ describe('Auth Routes', () => {
   afterAll(async () => {
     await prisma.user.deleteMany({ where: { email: testEmail } });
     await prisma.$disconnect();
+    await app.close();
   });
 
   it('should register a new user', async () => {

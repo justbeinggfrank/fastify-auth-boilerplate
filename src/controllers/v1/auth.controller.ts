@@ -3,6 +3,7 @@ import { prisma } from '../../prisma/client';
 import bcrypt from 'bcrypt';
 import { sendMail } from '../../utils/v1/mailer';
 import { z } from 'zod';
+import { getJwtInstance } from '../../utils/v1/helper';
 
 const registerSchema = z.object({
   name: z.string().min(1).max(100).trim(),
@@ -69,11 +70,8 @@ export const authController = {
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) return reply.code(401).send({ message: 'Invalid credentials' });
 
-    const token = (request.server as any).jwt.sign({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
+    const jwt = getJwtInstance(request);
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role });
     reply.send({ token });
   },
 
@@ -142,7 +140,8 @@ export const authController = {
       return reply.send({ message: 'If the email exists, a reset link will be sent.' });
     }
 
-    const resetToken = (request.server as any).jwt.sign(
+    const jwt = getJwtInstance(request);
+    const resetToken = jwt.sign(
       { id: user.id, email: user.email, type: 'reset' },
       { expiresIn: '15m' }
     );
@@ -170,7 +169,8 @@ export const authController = {
     const { resetToken, newPassword } = parseResult.data;
 
     try {
-      const payload = (request.server as any).jwt.verify(resetToken) as {
+      const jwt = getJwtInstance(request);
+      const payload = jwt.verify(resetToken) as {
         id: string;
         email: string;
         type: string;
