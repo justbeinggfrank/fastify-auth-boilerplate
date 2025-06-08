@@ -17,6 +17,7 @@ A boilerplate backend app using **Fastify**, **TypeScript**, **MySQL**, **Prisma
 - [nodemailer](https://nodemailer.com/about/)
 - [bcrypt](https://github.com/kelektiv/node.bcrypt.js)
 - [dotenv](https://github.com/motdotla/dotenv)
+- [@fastify/cors](https://github.com/fastify/fastify-cors)
 
 ### Development
 - [nodemon](https://nodemon.io/)
@@ -68,6 +69,7 @@ npx prisma generate                             # Generate Prisma client
 - Prisma ORM for MySQL
 - Jest for testing
 - Environment variable support with dotenv
+- CORS to control which domains can access API
 
 ---
 
@@ -97,7 +99,6 @@ tests/
 - Input Validation & Sanitization: Validate and sanitize all incoming data (query, body, params) to prevent injection attacks and bad data.
 - Centralized Error Handling: Use a global error handler to catch and format errors consistently.
 - Logging & Monitoring: Log important events and errors
-- CORS Configuration: Set up CORS to control which domains can access API.
 - Pagination for List Endpoints: Paginate endpoints that return lists to avoid performance issues.
 - Security Headers: Use headers like Content-Security-Policy, X-Content-Type-Options, etc. (Helmet helps with this).
 - Limit Payload Size: Restrict the size of incoming requests to prevent abuse.

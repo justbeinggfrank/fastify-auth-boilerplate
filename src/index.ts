@@ -6,6 +6,7 @@ import { authRoutes } from './routes/v1/auth';
 import fastifyQs from 'fastify-qs';
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyHelmet from '@fastify/helmet';
+import fastifyCors from '@fastify/cors';
 
 const app: FastifyInstance = Fastify({
   logger: {
@@ -29,6 +30,9 @@ app.register(fastifyRateLimit, {
 app.register(jwtPlugin);
 app.register(fastifyQs); // enables Fastify to parse nested query string parameters using the qs library
 app.register(fastifyHelmet);
+app.register(fastifyCors, {
+  origin: ['http://127.0.0.1:3002'], // or true for all origins
+});
 app.get('/', async () => {
   return { message: 'Welcome to the API' };
 });
