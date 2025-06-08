@@ -2,14 +2,40 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { prisma } from '../../prisma/client';
 import bcrypt from 'bcrypt';
 import { sendMail } from '../../utils/v1/mailer';
+import { z } from 'zod';
+
+const registerSchema = z.object({
+  name: z.string().min(1).max(100).trim(),
+  email: z.string().email().trim(),
+  password: z.string().min(6).max(100),
+});
+
+const loginSchema = z.object({
+  email: z.string().email().trim(),
+  password: z.string().min(6).max(100),
+});
+
+const changePasswordSchema = z.object({
+  oldPassword: z.string().min(6).max(100),
+  newPassword: z.string().min(6).max(100),
+});
+
+const forgotPasswordSchema = z.object({
+  email: z.string().email().trim(),
+});
+
+const resetPasswordSchema = z.object({
+  resetToken: z.string().min(1),
+  newPassword: z.string().min(6).max(100),
+});
 
 export async function authRoutes(fastify: FastifyInstance) {
   fastify.post('/register', async (request, reply) => {
-    const { name, email, password } = request.body as {
-      name: string;
-      email: string;
-      password: string;
-    };
+    const parseResult = registerSchema.safeParse(request.body);
+    if (!parseResult.success) {
+      return reply.status(400).send({ message: 'Invalid input', errors: parseResult.error.errors });
+    }
+    const { name, email, password } = parseResult.data;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -25,10 +51,11 @@ export async function authRoutes(fastify: FastifyInstance) {
   });
 
   fastify.post('/login', async (request, reply) => {
-    const { email, password } = request.body as {
-      email: string;
-      password: string;
-    };
+    const parseResult = loginSchema.safeParse(request.body);
+    if (!parseResult.success) {
+      return reply.status(400).send({ message: 'Invalid input', errors: parseResult.error.errors });
+    }
+    const { email, password } = parseResult.data;
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user || !user.password) {
@@ -91,11 +118,14 @@ export async function authRoutes(fastify: FastifyInstance) {
     '/change-password',
     { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest, reply: FastifyReply) => {
+      const parseResult = changePasswordSchema.safeParse(request.body);
+      if (!parseResult.success) {
+        return reply
+          .status(400)
+          .send({ message: 'Invalid input', errors: parseResult.error.errors });
+      }
+      const { oldPassword, newPassword } = parseResult.data;
       const userId = (request.user as { id: number; email: string; role: string }).id;
-      const { oldPassword, newPassword } = request.body as {
-        oldPassword: string;
-        newPassword: string;
-      };
 
       const user = await prisma.user.findUnique({ where: { id: userId } });
       if (!user || !user.password) {
@@ -119,7 +149,12 @@ export async function authRoutes(fastify: FastifyInstance) {
 
   // Forgot password (send reset token)
   fastify.post('/forgot-password', async (request, reply) => {
-    const { email } = request.body as { email: string };
+    const parseResult = forgotPasswordSchema.safeParse(request.body);
+    if (!parseResult.success) {
+      return reply.status(400).send({ message: 'Invalid input', errors: parseResult.error.errors });
+    }
+    const { email } = parseResult.data;
+
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       // For security, do not reveal if user exists
@@ -151,10 +186,11 @@ export async function authRoutes(fastify: FastifyInstance) {
 
   // Reset password using token
   fastify.post('/reset-password', async (request, reply) => {
-    const { resetToken, newPassword } = request.body as {
-      resetToken: string;
-      newPassword: string;
-    };
+    const parseResult = resetPasswordSchema.safeParse(request.body);
+    if (!parseResult.success) {
+      return reply.status(400).send({ message: 'Invalid input', errors: parseResult.error.errors });
+    }
+    const { resetToken, newPassword } = parseResult.data;
 
     try {
       const payload = fastify.jwt.verify(resetToken) as { id: string; email: string; type: string };
