@@ -5,6 +5,7 @@ import 'dotenv/config';
 import { authRoutes } from './routes/auth';
 import fastifyQs from 'fastify-qs';
 import fastifyRateLimit from '@fastify/rate-limit';
+import fastifyHelmet from '@fastify/helmet';
 
 const app: FastifyInstance = Fastify({
   logger: {
@@ -27,6 +28,7 @@ app.register(fastifyRateLimit, {
 
 app.register(jwtPlugin);
 app.register(fastifyQs);
+app.register(fastifyHelmet);
 app.get('/', async () => {
   return { message: 'Welcome to the API' };
 });
