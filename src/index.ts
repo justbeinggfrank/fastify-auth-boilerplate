@@ -12,6 +12,7 @@ const app: FastifyInstance = Fastify({
   logger: {
     level: 'debug',
   },
+  bodyLimit: 1 * 1024 * 1024, // 1 MB limit for request body
 });
 
 // Register rate limiting plugin
