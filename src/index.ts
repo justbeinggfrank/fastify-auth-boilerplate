@@ -11,12 +11,6 @@ import fastifyCors from '@fastify/cors';
 const app: FastifyInstance = Fastify({
   logger: {
     level: 'debug',
-    // transport: {
-    //   target: 'pino-pretty',
-    //   options: {
-    //     colorize: true,
-    //   },
-    // },
   },
 });
 

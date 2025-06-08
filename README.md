@@ -60,6 +60,7 @@ npm run format     # Format code using Prettier
 - Jest for testing
 - Environment variable support with dotenv
 - CORS to control which domains can access API
+- Log file that can be used for monitoring
 
 ---
 
@@ -88,7 +89,7 @@ tests/
 
 - Input Validation & Sanitization: Validate and sanitize all incoming data (query, body, params) to prevent injection attacks and bad data.
 - Centralized Error Handling: Use a global error handler to catch and format errors consistently.
-- Logging & Monitoring: Log important events and errors
+- Monitoring: use Datadog
 - Pagination for List Endpoints: Paginate endpoints that return lists to avoid performance issues.
 - Security Headers: Use headers like Content-Security-Policy, X-Content-Type-Options, etc. (Helmet helps with this).
 - Limit Payload Size: Restrict the size of incoming requests to prevent abuse.
