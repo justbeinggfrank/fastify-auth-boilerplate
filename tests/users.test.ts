@@ -1,41 +1,27 @@
-import Fastify from 'fastify';
-import { userRoutes } from '../src/routes/v1/users';
+import { app } from '../src/index';
 import { prisma } from '../src/prisma/client';
-import jwtPlugin from '../src/plugins/jwt';
-
-const build = () => {
-    const app = Fastify();
-    app.register(jwtPlugin);
-    app.register(userRoutes);
-    return app;
-};
 
 describe('User Routes', () => {
-    let app: ReturnType<typeof build>;
     let userId: number;
-
-    beforeAll(async () => {
-        app = build();
-        await app.ready();
-    });
-
-    afterAll(async () => {
-        await app.close();
-    });
 
     afterEach(async () => {
         // Clean up users after each test
         await prisma.user.deleteMany({
             where: {
-                email: { contains: 'example-jest.com' } // or another test-only pattern
+                email: { contains: 'example-jest.com' }
             }
         });
+    });
+
+    afterAll(async () => {
+        await app.close();
+        await prisma.$disconnect();
     });
 
     it('should create a user', async () => {
         const response = await app.inject({
             method: 'POST',
-            url: '/users',
+            url: '/api/v1/users',
             payload: { name: 'Test User', email: 'test@example-jest.com' },
         });
         expect(response.statusCode).toBe(201);
@@ -50,7 +36,7 @@ describe('User Routes', () => {
         await prisma.user.create({ data: { name: 'User1', email: 'user1@example-jest.com' } });
         const response = await app.inject({
             method: 'GET',
-            url: '/users',
+            url: '/api/v1/users',
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body);
@@ -58,13 +44,11 @@ describe('User Routes', () => {
         expect(body.length).toBeGreaterThan(0);
     });
 
-
-
     it('should get a single user', async () => {
         const user = await prisma.user.create({ data: { name: 'User2', email: 'user2@example-jest.com' } });
         const response = await app.inject({
             method: 'GET',
-            url: `/users/${user.id}`,
+            url: `/api/v1/users/${user.id}`,
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body);
@@ -75,7 +59,7 @@ describe('User Routes', () => {
     it('should return 404 for non-existing user', async () => {
         const response = await app.inject({
             method: 'GET',
-            url: '/users/999999', // Assuming this ID does not exist
+            url: '/api/v1/users/999999', // Assuming this ID does not exist
         });
         expect(response.statusCode).toBe(404);
         const body = JSON.parse(response.body);
@@ -85,20 +69,19 @@ describe('User Routes', () => {
     it('should return 400 for invalid user ID', async () => {
         const response = await app.inject({
             method: 'GET',
-            url: '/users/invalid-format', // Invalid ID format
+            url: '/api/v1/users/invalid-format', // Invalid ID format
         });
         expect(response.statusCode).toBe(400);
         const body = JSON.parse(response.body);
         expect(body.message).toBe('Invalid user id');
         expect(body.errors).toBeDefined();
-    }
-    );
+    });
 
     it('should update a user', async () => {
         const user = await prisma.user.create({ data: { name: 'User3', email: 'user3@example-jest.com' } });
         const response = await app.inject({
             method: 'PUT',
-            url: `/users/${user.id}`,
+            url: `/api/v1/users/${user.id}`,
             payload: { name: 'Updated User3' },
         });
         expect(response.statusCode).toBe(200);
@@ -110,7 +93,7 @@ describe('User Routes', () => {
         const user = await prisma.user.create({ data: { name: 'User4', email: 'user4@example-jest.com' } });
         const response = await app.inject({
             method: 'DELETE',
-            url: `/users/${user.id}`,
+            url: `/api/v1/users/${user.id}`,
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body);
@@ -130,7 +113,7 @@ describe('User Routes', () => {
 
         const response = await app.inject({
             method: 'GET',
-            url: '/users-paginated?start=0&length=2',
+            url: '/api/v1/users-paginated?start=0&length=2',
         });
 
         expect(response.statusCode).toBe(200);
@@ -145,5 +128,4 @@ describe('User Routes', () => {
         expect(body.recordsTotal).toBeGreaterThanOrEqual(3);
         expect(body.recordsFiltered).toBeGreaterThanOrEqual(3);
     });
-
 });
