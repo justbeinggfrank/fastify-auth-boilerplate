@@ -62,6 +62,7 @@ npm run format     # Format code using Prettier
 - CORS to control which domains can access API
 - Log file that can be used for monitoring
 - Limited Payload Size
+- Centralized Error Handling: used a global error handler to catch and format errors consistently.
 ---
 
 ## 📁 Project Structure
@@ -88,7 +89,6 @@ tests/
 ## 🔨 Todo
 
 - Input Validation & Sanitization: Validate and sanitize all incoming data (query, body, params) to prevent injection attacks and bad data.
-- Centralized Error Handling: Use a global error handler to catch and format errors consistently.
 - Monitoring: use Datadog
 - Pagination for List Endpoints: Paginate endpoints that return lists to avoid performance issues.
 

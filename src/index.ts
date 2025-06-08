@@ -43,7 +43,9 @@ app.setErrorHandler((error, request, reply) => {
     console.log(code, name);
     reply.status(error.statusCode || 401).send(rest);
   } else {
-    reply.send(error);
+    reply
+      .status(error.statusCode || 500)
+      .send({ message: error.message || 'Internal server error' });
   }
 });
 
