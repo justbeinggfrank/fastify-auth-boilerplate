@@ -27,7 +27,7 @@ app.register(fastifyRateLimit, {
 });
 
 app.register(jwtPlugin);
-app.register(fastifyQs);
+app.register(fastifyQs); // enables Fastify to parse nested query string parameters using the qs library
 app.register(fastifyHelmet);
 app.get('/', async () => {
   return { message: 'Welcome to the API' };
