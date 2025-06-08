@@ -45,5 +45,6 @@ export default defineConfig([globalIgnores([
 
     rules: {
         "prettier/prettier": "error",
+        "@typescript-eslint/no-explicit-any": "off", // Allow usage of 'any' type
     },
 }]);
