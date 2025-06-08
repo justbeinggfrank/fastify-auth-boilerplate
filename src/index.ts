@@ -1,0 +1,54 @@
+import Fastify, { FastifyInstance } from 'fastify';
+import { userRoutes } from './routes/users';
+import jwtPlugin from './plugins/jwt';
+import 'dotenv/config';
+import { authRoutes } from './routes/auth';
+import fastifyQs from 'fastify-qs';
+
+const app: FastifyInstance = Fastify({
+  logger: {
+    level: 'debug',
+    // transport: {
+    //   target: 'pino-pretty',
+    //   options: {
+    //     colorize: true,
+    //   },
+    // },
+  },
+});
+
+app.register(jwtPlugin);
+app.register(fastifyQs);
+app.get('/', async () => {
+  return { message: 'Welcome to the API' };
+});
+
+// Register routes with /api prefix
+app.register(userRoutes, { prefix: '/api' });
+app.register(authRoutes, { prefix: '/api' });
+
+// Add custom error handler to remove 'code' from JWT errors
+app.setErrorHandler((error, request, reply) => {
+  if (error && error.code && error.code.startsWith('FST_JWT_')) {
+    const { code, name, ...rest } = error;
+    console.log(code, name);
+    reply.status(error.statusCode || 401).send(rest);
+  } else {
+    reply.send(error);
+  }
+});
+
+app.ready().then(() => {
+  console.log(app.printRoutes());
+});
+
+const start = async (): Promise<void> => {
+  try {
+    await app.listen({ port: Number(process.env.SERVER_PORT) || 3000 });
+  } catch (err) {
+    app.log.error(err);
+    process.exit(1);
+  }
+};
+
+start();
