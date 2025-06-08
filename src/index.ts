@@ -1,8 +1,8 @@
 import Fastify, { FastifyInstance } from 'fastify';
-import { userRoutes } from './routes/users';
+import { userRoutes } from './routes/v1/users';
 import jwtPlugin from './plugins/jwt';
 import 'dotenv/config';
-import { authRoutes } from './routes/auth';
+import { authRoutes } from './routes/v1/auth';
 import fastifyQs from 'fastify-qs';
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyHelmet from '@fastify/helmet';
@@ -34,8 +34,8 @@ app.get('/', async () => {
 });
 
 // Register routes with /api prefix
-app.register(userRoutes, { prefix: '/api' });
-app.register(authRoutes, { prefix: '/api' });
+app.register(userRoutes, { prefix: '/api/v1' });
+app.register(authRoutes, { prefix: '/api/v1' });
 
 // Add custom error handler to remove 'code' from JWT errors
 app.setErrorHandler((error, request, reply) => {

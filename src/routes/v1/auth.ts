@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { prisma } from '../prisma/client';
+import { prisma } from '../../prisma/client';
 import bcrypt from 'bcrypt';
-import { sendMail } from '../utils/mailer';
+import { sendMail } from '../../utils/v1/mailer';
 
 export async function authRoutes(fastify: FastifyInstance) {
   fastify.post('/register', async (request, reply) => {
@@ -147,7 +147,6 @@ export async function authRoutes(fastify: FastifyInstance) {
       console.error('Error sending reset email:', error);
       return reply.code(500).send({ message: 'Failed to send reset email' });
     }
-
   });
 
   // Reset password using token

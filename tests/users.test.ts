@@ -1,5 +1,5 @@
 import Fastify from 'fastify';
-import { userRoutes } from '../src/routes/users';
+import { userRoutes } from '../src/routes/v1/users';
 import { prisma } from '../src/prisma/client';
 import jwtPlugin from '../src/plugins/jwt';
 

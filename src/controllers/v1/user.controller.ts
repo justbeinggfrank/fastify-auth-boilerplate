@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { userService } from '../services/user.service';
+import { userService } from '../../services/v1/user.service';
 
 export const userController = {
   getAllUsers: async (request: FastifyRequest, reply: FastifyReply) => {
