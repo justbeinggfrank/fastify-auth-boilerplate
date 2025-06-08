@@ -91,7 +91,6 @@ tests/
 - Centralized Error Handling: Use a global error handler to catch and format errors consistently.
 - Monitoring: use Datadog
 - Pagination for List Endpoints: Paginate endpoints that return lists to avoid performance issues.
-- Database Security: Use parameterized queries/ORMs, least-privilege DB users, and never expose raw errors.
 
 ---
 
