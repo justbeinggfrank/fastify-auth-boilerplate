@@ -7,14 +7,14 @@ A boilerplate backend app using **Fastify**, **TypeScript**, **MySQL**, **Prisma
 ## 📦 Dependencies
 
 ### Runtime
-- [fastify](https://www.fastify.io/)
+- [fastify](https://github.com/fastify/fastify)
 - [@fastify/helmet](https://github.com/fastify/fastify-helmet)
 - [@fastify/rate-limit](https://github.com/fastify/fastify-rate-limit)
-- [fastify-qs](https://github.com/fastify/fastify-qs)
-- [@prisma/client](https://www.prisma.io/)
-- [prisma](https://www.prisma.io/)
+- [fastify-qs](https://github.com/vanodevium/fastify-qs)
+- [prisma](https://github.com/prisma/prisma)
+- [@prisma/client](https://github.com/prisma/prisma)
 - [mysql2](https://github.com/sidorares/node-mysql2)
-- [nodemailer](https://nodemailer.com/about/)
+- [nodemailer](https://github.com/nodemailer/nodemailer)
 - [bcrypt](https://github.com/kelektiv/node.bcrypt.js)
 - [dotenv](https://github.com/motdotla/dotenv)
 - [@fastify/cors](https://github.com/fastify/fastify-cors)
@@ -45,16 +45,6 @@ npm test           # Run tests using Jest
 npm run lint       # Run ESLint on source files
 npm run lint:fix   # Run ESLint and auto-fix problems
 npm run format     # Format code using Prettier
-```
-
----
-
-## 🛠️ Quickscripts
-
-```bash
-npx prisma migrate dev --name <migration_name>  # Create a migration file
-npx prisma migrate dev                          # Run migration
-npx prisma generate                             # Generate Prisma client
 ```
 
 ---
@@ -103,6 +93,16 @@ tests/
 - Security Headers: Use headers like Content-Security-Policy, X-Content-Type-Options, etc. (Helmet helps with this).
 - Limit Payload Size: Restrict the size of incoming requests to prevent abuse.
 - Database Security: Use parameterized queries/ORMs, least-privilege DB users, and never expose raw errors.
+
+---
+
+## ⚡ Other Scripts
+
+```bash
+npx prisma migrate dev --name <migration_name>  # Create a migration file
+npx prisma migrate dev                          # Run migration
+npx prisma generate                             # Generate Prisma client
+```
 
 ---
 
