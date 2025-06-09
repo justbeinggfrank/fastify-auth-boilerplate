@@ -97,6 +97,7 @@ tests/
 ## 🔨 Todo
 - Monitoring: use Datadog
 - RBAC using db
+- Queing for mail
 
 ---
 
