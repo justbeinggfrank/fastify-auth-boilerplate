@@ -63,6 +63,7 @@ npm run format     # Format code using Prettier
 - Log file that can be used for monitoring
 - Limited Payload Size
 - Centralized Error Handling: used a global error handler to catch and format errors consistently.
+- Input Validation & Sanitization using zod
 ---
 
 ## 📁 Project Structure
@@ -87,8 +88,6 @@ tests/
 ---
 
 ## 🔨 Todo
-
-- Input Validation & Sanitization: Validate and sanitize all incoming data (query, body, params) to prevent injection attacks and bad data.
 - Monitoring: use Datadog
 - Pagination for List Endpoints: Paginate endpoints that return lists to avoid performance issues.
 
