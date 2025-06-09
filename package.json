@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon > app.log",
+    "dev": "nodemon >> app.log",
     "build": "tsc",
-    "start": "node dist/index.js > app.log",
+    "start": "node dist/index.js >> app.log",
     "test": "jest",
     "seed": "ts-node prisma/seed.ts",
     "lint": "eslint \"src/**/*.{ts,js}\"",
