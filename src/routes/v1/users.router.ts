@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { requireSuperadmin } from '../../middleware/v1/requireSuperadmin.middleware';
+import { requireSuperadmin } from '../../middleware/v1/require-superadmin.middleware';
 import { userController } from '../../controllers/v1/user.controller';
 
 export async function userRoutes(fastify: FastifyInstance) {
