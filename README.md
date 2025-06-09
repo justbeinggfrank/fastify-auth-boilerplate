@@ -19,6 +19,9 @@ A boilerplate backend app using **Fastify**, **TypeScript**, **MySQL**, **Prisma
 - [dotenv](https://github.com/motdotla/dotenv)
 - [@fastify/cors](https://github.com/fastify/fastify-cors)
 
+### Validation
+- [zod](https://github.com/colinhacks/zod)
+
 ### Development
 - [nodemon](https://nodemon.io/)
 - [typescript](https://www.typescriptlang.org/)
@@ -60,10 +63,10 @@ npm run format     # Format code using Prettier
 - Jest for testing
 - Environment variable support with dotenv
 - CORS to control which domains can access API
-- Log file that can be used for monitoring
-- Limited Payload Size
-- Centralized Error Handling: used a global error handler to catch and format errors consistently.
-- Input Validation & Sanitization using zod
+- Log file that can be used for monitoring (app.log)
+- Limit on Payload Size
+- Centralized Error Handling
+- Input Validation & Sanitization
 - Pagination for List Endpoints
 
 ---
