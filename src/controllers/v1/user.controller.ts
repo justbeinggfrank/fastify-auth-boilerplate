@@ -96,32 +96,45 @@ export const userController = {
     reply.send(user);
   },
   getPaginatedUsers: async (request: FastifyRequest, reply: FastifyReply) => {
-    //fix lint in the future
-    const { draw, start = 0, length = 10, search = {}, order = [] } = request.query as any;
-
-    console.log('Paginated users request:', {
-      start,
-      length,
-      order,
+    // Validate query params
+    const querySchema = z.object({
+      skip: z.coerce.number().min(0).optional(),
+      take: z.coerce.number().min(1).max(100).optional(),
+      search: z.string().optional(),
+      orderBy: z.string().optional(), // field name
+      orderDir: z.enum(['asc', 'desc']).optional(),
     });
 
-    // Pass all relevant params to the service
-    const [result, error] = await userService.getPaginatedUsers(
-      Number(start),
-      Number(length),
-      search,
-      order
-    );
+    const parseResult = querySchema.safeParse(request.query);
+    if (!parseResult.success) {
+      return reply
+        .status(400)
+        .send({ message: 'Invalid query params', errors: parseResult.error.errors });
+    }
+    const { skip = 0, take = 10, search, orderBy, orderDir } = parseResult.data;
+
+    // Build Prisma where clause
+    let where = {};
+    if (search) {
+      where = {
+        OR: [{ name: { contains: search } }, { email: { contains: search } }],
+      };
+    }
+
+    // Build Prisma orderBy
+    let order: { [key: string]: 'asc' | 'desc' }[] | undefined;
+    if (orderBy && orderDir) {
+      order = [{ [orderBy]: orderDir }];
+    }
+
+    // Call service with Prisma-style params
+    const [result, error] = await userService.getPaginatedUsers(skip, take, where, order);
 
     if (error) {
       return reply.status(500).send({ message: 'Internal server error' });
     }
 
-    // DataTables expects draw to be returned as-is
-    reply.send({
-      draw: Number(draw) || 0,
-      ...(typeof result === 'object' && result !== null ? result : {}),
-    });
+    reply.send(result);
   },
   enableUser: async (request: FastifyRequest, reply: FastifyReply) => {
     const parseResult = userIdParamSchema.safeParse(request.params);

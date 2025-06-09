@@ -113,7 +113,7 @@ describe('User Routes', () => {
 
         const response = await app.inject({
             method: 'GET',
-            url: '/api/v1/users-paginated?start=0&length=2',
+            url: '/api/v1/users-paginated?skip=0&take=2&orderBy=name&orderDir=asc',
         });
 
         expect(response.statusCode).toBe(200);
@@ -123,9 +123,13 @@ describe('User Routes', () => {
         expect(Array.isArray(body.data)).toBe(true);
         expect(body.data.length).toBeLessThanOrEqual(2);
 
-        expect(body).toHaveProperty('recordsTotal');
-        expect(body).toHaveProperty('recordsFiltered');
-        expect(body.recordsTotal).toBeGreaterThanOrEqual(3);
-        expect(body.recordsFiltered).toBeGreaterThanOrEqual(3);
+        expect(body).toHaveProperty('total');
+        expect(typeof body.total).toBe('number');
+        expect(body.total).toBeGreaterThanOrEqual(3);
+
+        // Check ordering is ascending by name
+        if (body.data.length === 2) {
+            expect(body.data[0].name <= body.data[1].name).toBe(true);
+        }
     });
 });

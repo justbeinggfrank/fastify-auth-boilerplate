@@ -51,51 +51,27 @@ export const userService = {
     }
   },
   getPaginatedUsers: async (
-    start?: number,
-    length?: number,
-    search?: { value?: string } | string,
-    orderBy?: { column?: string; dir?: 'asc' | 'desc' }
+    skip: number,
+    take: number,
+    where: Record<string, unknown>,
+    order?: { [key: string]: 'asc' | 'desc' }[]
   ) => {
     try {
-      const skip = typeof start === 'number' && !isNaN(start) ? start : 0;
-      const take = typeof length === 'number' && !isNaN(length) ? length : 10;
-
-      // Handle search value (object or string)
-      let searchValue = '';
-      if (typeof search === 'object' && search !== null && 'value' in search) {
-        searchValue = (search.value || '').trim();
-      } else if (typeof search === 'string') {
-        searchValue = search.trim();
-      }
-
-      const where = searchValue
-        ? {
-            OR: [{ name: { contains: searchValue } }, { email: { contains: searchValue } }],
-          }
-        : {};
-
-      // Handle orderBy
-      let order = undefined;
-      if (orderBy && orderBy.column) {
-        order = { [orderBy.column]: orderBy.dir === 'desc' ? 'desc' : 'asc' };
-      }
-
-      const [users, totalCount, filteredCount] = await Promise.all([
+      const [users, total] = await Promise.all([
         prisma.user.findMany({
           skip,
           take,
           where,
-          ...(order ? { orderBy: order } : {}),
+          orderBy: order,
         }),
-        prisma.user.count(),
-        where && Object.keys(where).length > 0 ? prisma.user.count({ where }) : prisma.user.count(),
+        prisma.user.count({ where }),
       ]);
-
       return [
         {
           data: users,
-          recordsTotal: totalCount,
-          recordsFiltered: filteredCount,
+          total,
+          skip,
+          take,
         },
         null,
       ];
