@@ -89,7 +89,7 @@ src/
   utils/
   index.ts
 tests/
-  users.test.ts
+  v1/
 ```
 
 ---
