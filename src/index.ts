@@ -8,9 +8,12 @@ import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyCors from '@fastify/cors';
 
+const loggerLevel =
+  process.env.APP_ENV === 'production' ? 'info' : process.env.APP_ENV === 'test' ? 'warn' : 'debug';
+
 export const app: FastifyInstance = Fastify({
   logger: {
-    level: 'debug',
+    level: loggerLevel,
   },
   bodyLimit: 1 * 1024 * 1024, // 1 MB limit for request body
 });
