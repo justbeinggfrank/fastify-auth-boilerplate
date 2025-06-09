@@ -1,6 +1,6 @@
-# Fastify TypeScript MySQL Prisma Nodemailer Boilerplate
+# Fastify Auth Boilerplate
 
-A boilerplate backend app using **Fastify**, **TypeScript**, **MySQL**, **Prisma**, and **Nodemailer** — with live reload (Nodemon), security (Helmet, rate limiting), and testing (Jest).
+A boilerplate backend app using **Fastify**, **TypeScript**, **MySQL**, **Prisma**, **JWT**, **Zod**, and **Nodemailer** — with live reload (Nodemon), security (Helmet, rate limiting), and testing (Jest).
 
 ---
 
@@ -32,9 +32,6 @@ A boilerplate backend app using **Fastify**, **TypeScript**, **MySQL**, **Prisma
 - [jest](https://jestjs.io/)
 - [ts-jest](https://kulshekhar.github.io/ts-jest/)
 - [@types/jest](https://www.npmjs.com/package/@types/jest)
-
-### Logging
-- [pino-pretty](https://github.com/pinojs/pino-pretty)
 
 ---
 
