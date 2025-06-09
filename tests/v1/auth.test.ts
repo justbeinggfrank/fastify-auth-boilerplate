@@ -1,5 +1,5 @@
-import { app } from '../src/index'; 
-import { prisma } from '../src/prisma/client';
+import { app } from '../../src/index'; 
+import { prisma } from '../../src/prisma/client';
 
 describe('Auth Routes', () => {
   const testEmail = 'jestuser@example.com';

@@ -1,5 +1,5 @@
-import { app } from '../src/index';
-import { prisma } from '../src/prisma/client';
+import { app } from '../../src/index';
+import { prisma } from '../../src/prisma/client';
 
 describe('User Routes', () => {
     let userId: number;
