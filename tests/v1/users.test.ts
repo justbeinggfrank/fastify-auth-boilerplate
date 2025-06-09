@@ -26,7 +26,7 @@ describe('User Routes with RBAC', () => {
         const response = await app.inject({
             method: 'POST',
             url: '/api/v1/users',
-            payload: { name: 'Test User 0', email: 'test0@xample-jest.com' },
+            payload: { name: 'Test User 0', email: 'test0@example-jest.com' },
             headers: { authorization: superadminToken },
         });
         expect(response.statusCode).toBe(201);
