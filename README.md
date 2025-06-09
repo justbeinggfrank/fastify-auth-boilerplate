@@ -11,6 +11,7 @@ A boilerplate backend app using **Fastify**, **TypeScript**, **MySQL**, **Prisma
 - [@fastify/helmet](https://github.com/fastify/fastify-helmet)
 - [@fastify/rate-limit](https://github.com/fastify/fastify-rate-limit)
 - [fastify-qs](https://github.com/vanodevium/fastify-qs)
+- [fastify-jwt](https://github.com/fastify/fastify-jwt)
 - [prisma](https://github.com/prisma/prisma)
 - [@prisma/client](https://github.com/prisma/prisma)
 - [mysql2](https://github.com/sidorares/node-mysql2)
@@ -21,6 +22,9 @@ A boilerplate backend app using **Fastify**, **TypeScript**, **MySQL**, **Prisma
 
 ### Validation
 - [zod](https://github.com/colinhacks/zod)
+
+### Role-Based Access Control (RBAC)
+- [@casl/ability](https://casl.js.org/)
 
 ### Development
 - [nodemon](https://nodemon.io/)
@@ -65,6 +69,7 @@ npm run format     # Format code using Prettier
 - Centralized Error Handling
 - Input Validation & Sanitization
 - Pagination for List Endpoints
+- Simple Role-Based Access Control
 
 ---
 
@@ -91,7 +96,7 @@ tests/
 
 ## 🔨 Todo
 - Monitoring: use Datadog
-- implement Access Control System
+- RBAC using db
 
 ---
 

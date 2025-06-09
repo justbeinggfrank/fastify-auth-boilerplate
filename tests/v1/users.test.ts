@@ -1,7 +1,11 @@
 import { app } from '../../src/index';
 import { prisma } from '../../src/prisma/client';
 
-describe('User Routes', () => {
+const adminToken = 'Bearer ' + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NDk0NjI2NjJ9.jxOptr0RFNH86ofzR2bns21XMj_8ZDr-V3DLHFUm_1s';
+const userToken = 'Bearer ' + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTc0LCJlbWFpbCI6ImZyYW5rbGlubWFuY2FvQGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzQ5NDYxODkxfQ.Q0jsZrzjYB3sXXG6Bebs23xLkBLgIkzGsb_yJ9IV08g';
+const superadminToken = 'Bearer ' + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJzdXBlcmFkbWluQGdtYWlsLmNvbSIsInJvbGUiOiJzdXBlcmFkbWluIiwiaWF0IjoxNzQ5NDEyNTE4fQ.1Es0e16XI6jVlDLDM9u05WSBjBwGwBQSUApff4GoiX4';
+
+describe('User Routes with RBAC', () => {
     let userId: number;
 
     afterEach(async () => {
@@ -18,25 +22,46 @@ describe('User Routes', () => {
         await prisma.$disconnect();
     });
 
-    it('should create a user', async () => {
+    it('superadmin should create a user', async () => {
         const response = await app.inject({
             method: 'POST',
             url: '/api/v1/users',
-            payload: { name: 'Test User', email: 'test@example-jest.com' },
+            payload: { name: 'Test User 0', email: 'test0@xample-jest.com' },
+            headers: { authorization: superadminToken },
         });
         expect(response.statusCode).toBe(201);
         const body = JSON.parse(response.body);
         expect(body).toHaveProperty('id');
-        expect(body.name).toBe('Test User');
-        expect(body.email).toBe('test@example-jest.com');
-        userId = body.id;
+        expect(body.name).toBe('Test User 0');
+        expect(body.email).toBe('test0@xample-jest.com');
     });
 
-    it('should get all users', async () => {
+    it('admin should NOT create a user', async () => {
+        const response = await app.inject({
+            method: 'POST',
+            url: '/api/v1/users',
+            payload: { name: 'Test User', email: 'test@example-jest.com' },
+            headers: { authorization: adminToken },
+        });
+        expect(response.statusCode).toBe(403);
+    });
+
+    it('user should NOT create a user', async () => {
+        const response = await app.inject({
+            method: 'POST',
+            url: '/api/v1/users',
+            payload: { name: 'Test User', email: 'test2@example-jest.com' },
+            headers: { authorization: userToken },
+        });
+        expect(response.statusCode).toBe(403);
+    });
+
+    it('should get all users (admin)', async () => {
         await prisma.user.create({ data: { name: 'User1', email: 'user1@example-jest.com' } });
         const response = await app.inject({
             method: 'GET',
             url: '/api/v1/users',
+            headers: { authorization: adminToken },
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body);
@@ -44,11 +69,12 @@ describe('User Routes', () => {
         expect(body.length).toBeGreaterThan(0);
     });
 
-    it('should get a single user', async () => {
+    it('should get a single user (user)', async () => {
         const user = await prisma.user.create({ data: { name: 'User2', email: 'user2@example-jest.com' } });
         const response = await app.inject({
             method: 'GET',
             url: `/api/v1/users/${user.id}`,
+            headers: { authorization: userToken },
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body);
@@ -56,20 +82,22 @@ describe('User Routes', () => {
         expect(body.name).toBe('User2');
     });
 
-    it('should return 404 for non-existing user', async () => {
+    it('should return 404 for non-existing user (admin)', async () => {
         const response = await app.inject({
             method: 'GET',
-            url: '/api/v1/users/999999', // Assuming this ID does not exist
+            url: '/api/v1/users/999999',
+            headers: { authorization: adminToken },
         });
         expect(response.statusCode).toBe(404);
         const body = JSON.parse(response.body);
         expect(body.message).toBe('User not found');
     });
 
-    it('should return 400 for invalid user ID', async () => {
+    it('should return 400 for invalid user ID (admin)', async () => {
         const response = await app.inject({
             method: 'GET',
-            url: '/api/v1/users/invalid-format', // Invalid ID format
+            url: '/api/v1/users/invalid-format',
+            headers: { authorization: adminToken },
         });
         expect(response.statusCode).toBe(400);
         const body = JSON.parse(response.body);
@@ -77,31 +105,51 @@ describe('User Routes', () => {
         expect(body.errors).toBeDefined();
     });
 
-    it('should update a user', async () => {
+    it('admin should NOT update a user', async () => {
         const user = await prisma.user.create({ data: { name: 'User3', email: 'user3@example-jest.com' } });
         const response = await app.inject({
             method: 'PUT',
             url: `/api/v1/users/${user.id}`,
             payload: { name: 'Updated User3' },
+            headers: { authorization: adminToken },
         });
-        expect(response.statusCode).toBe(200);
-        const body = JSON.parse(response.body);
-        expect(body.name).toBe('Updated User3');
+        expect(response.statusCode).toBe(403);
     });
 
-    it('should delete a user', async () => {
+    it('user should NOT update another user', async () => {
         const user = await prisma.user.create({ data: { name: 'User4', email: 'user4@example-jest.com' } });
+        const response = await app.inject({
+            method: 'PUT',
+            url: `/api/v1/users/${user.id}`,
+            payload: { name: 'Updated User4' },
+            headers: { authorization: userToken },
+        });
+        expect(response.statusCode).toBe(403);
+    });
+
+    it('superadmin should delete a user', async () => {
+        const user = await prisma.user.create({ data: { name: 'User5', email: 'user5@example-jest.com' } });
         const response = await app.inject({
             method: 'DELETE',
             url: `/api/v1/users/${user.id}`,
+            headers: { authorization: superadminToken },
         });
         expect(response.statusCode).toBe(200);
         const body = JSON.parse(response.body);
         expect(body).toHaveProperty('id', user.id);
     });
 
-    it('should get paginated users', async () => {
-        // Seed some users for pagination
+    it('admin should NOT delete a user', async () => {
+        const user = await prisma.user.create({ data: { name: 'User6', email: 'user6@example-jest.com' } });
+        const response = await app.inject({
+            method: 'DELETE',
+            url: `/api/v1/users/${user.id}`,
+            headers: { authorization: adminToken },
+        });
+        expect(response.statusCode).toBe(403);
+    });
+
+    it('should get paginated users (admin)', async () => {
         await prisma.user.createMany({
             data: [
                 { name: 'Paginate User 1', email: 'paginate1@example-jest.com' },
@@ -114,6 +162,7 @@ describe('User Routes', () => {
         const response = await app.inject({
             method: 'GET',
             url: '/api/v1/users-paginated?skip=0&take=2&orderBy=name&orderDir=asc',
+            headers: { authorization: adminToken },
         });
 
         expect(response.statusCode).toBe(200);
