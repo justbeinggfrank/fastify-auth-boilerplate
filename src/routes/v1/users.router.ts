@@ -7,7 +7,7 @@ export async function userRoutes(fastify: FastifyInstance) {
   fastify.get(
     '/users',
     { preHandler: [fastify.authenticate, requireAbility('read', 'User')] },
-    userController.getAllUsers
+    userController.getPaginatedUsers
   );
 
   // Get single user
@@ -37,13 +37,6 @@ export async function userRoutes(fastify: FastifyInstance) {
     '/users/:id',
     { preHandler: [fastify.authenticate, requireAbility('delete', 'User')] },
     userController.deleteUser
-  );
-
-  // Display users with limit and pagination for DataTables
-  fastify.get(
-    '/users-paginated',
-    { preHandler: [fastify.authenticate, requireAbility('read', 'User')] },
-    userController.getPaginatedUsers
   );
 
   // Enable user account (superadmin only)

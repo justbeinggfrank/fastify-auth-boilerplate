@@ -20,12 +20,46 @@ const updateUserSchema = z.object({
 });
 
 export const userController = {
-  getAllUsers: async (request: FastifyRequest, reply: FastifyReply) => {
-    const [users, error] = await userService.getAllUsers();
+  getPaginatedUsers: async (request: FastifyRequest, reply: FastifyReply) => {
+    // Validate query params
+    const querySchema = z.object({
+      skip: z.coerce.number().min(0).optional(),
+      take: z.coerce.number().min(1).max(100).optional(),
+      search: z.string().optional(),
+      orderBy: z.string().optional(), // field name
+      orderDir: z.enum(['asc', 'desc']).optional(),
+    });
+
+    const parseResult = querySchema.safeParse(request.query);
+    if (!parseResult.success) {
+      return reply
+        .status(400)
+        .send({ message: 'Invalid query params', errors: parseResult.error.errors });
+    }
+    const { skip = 0, take = 10, search, orderBy, orderDir } = parseResult.data;
+
+    // Build Prisma where clause
+    let where = {};
+    if (search) {
+      where = {
+        OR: [{ name: { contains: search } }, { email: { contains: search } }],
+      };
+    }
+
+    // Build Prisma orderBy
+    let order: { [key: string]: 'asc' | 'desc' }[] | undefined;
+    if (orderBy && orderDir) {
+      order = [{ [orderBy]: orderDir }];
+    }
+
+    // Call service with Prisma-style params
+    const [result, error] = await userService.getPaginatedUsers(skip, take, where, order);
+
     if (error) {
       return reply.status(500).send({ message: 'Internal server error' });
     }
-    reply.send(users);
+
+    reply.send(result);
   },
   getSingleUser: async (request: FastifyRequest, reply: FastifyReply) => {
     const parseResult = userIdParamSchema.safeParse(request.params);
@@ -94,47 +128,6 @@ export const userController = {
       return reply.status(404).send({ message: 'User not found' });
     }
     reply.send(user);
-  },
-  getPaginatedUsers: async (request: FastifyRequest, reply: FastifyReply) => {
-    // Validate query params
-    const querySchema = z.object({
-      skip: z.coerce.number().min(0).optional(),
-      take: z.coerce.number().min(1).max(100).optional(),
-      search: z.string().optional(),
-      orderBy: z.string().optional(), // field name
-      orderDir: z.enum(['asc', 'desc']).optional(),
-    });
-
-    const parseResult = querySchema.safeParse(request.query);
-    if (!parseResult.success) {
-      return reply
-        .status(400)
-        .send({ message: 'Invalid query params', errors: parseResult.error.errors });
-    }
-    const { skip = 0, take = 10, search, orderBy, orderDir } = parseResult.data;
-
-    // Build Prisma where clause
-    let where = {};
-    if (search) {
-      where = {
-        OR: [{ name: { contains: search } }, { email: { contains: search } }],
-      };
-    }
-
-    // Build Prisma orderBy
-    let order: { [key: string]: 'asc' | 'desc' }[] | undefined;
-    if (orderBy && orderDir) {
-      order = [{ [orderBy]: orderDir }];
-    }
-
-    // Call service with Prisma-style params
-    const [result, error] = await userService.getPaginatedUsers(skip, take, where, order);
-
-    if (error) {
-      return reply.status(500).send({ message: 'Internal server error' });
-    }
-
-    reply.send(result);
   },
   enableUser: async (request: FastifyRequest, reply: FastifyReply) => {
     const parseResult = userIdParamSchema.safeParse(request.params);

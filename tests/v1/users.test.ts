@@ -33,7 +33,7 @@ describe('User Routes with RBAC', () => {
         const body = JSON.parse(response.body);
         expect(body).toHaveProperty('id');
         expect(body.name).toBe('Test User 0');
-        expect(body.email).toBe('test0@xample-jest.com');
+        expect(body.email).toBe('test0@example-jest.com');
     });
 
     it('admin should NOT create a user', async () => {
@@ -54,19 +54,6 @@ describe('User Routes with RBAC', () => {
             headers: { authorization: userToken },
         });
         expect(response.statusCode).toBe(403);
-    });
-
-    it('should get all users (admin)', async () => {
-        await prisma.user.create({ data: { name: 'User1', email: 'user1@example-jest.com' } });
-        const response = await app.inject({
-            method: 'GET',
-            url: '/api/v1/users',
-            headers: { authorization: adminToken },
-        });
-        expect(response.statusCode).toBe(200);
-        const body = JSON.parse(response.body);
-        expect(Array.isArray(body)).toBe(true);
-        expect(body.length).toBeGreaterThan(0);
     });
 
     it('should get a single user (user)', async () => {
@@ -161,7 +148,7 @@ describe('User Routes with RBAC', () => {
 
         const response = await app.inject({
             method: 'GET',
-            url: '/api/v1/users-paginated?skip=0&take=2&orderBy=name&orderDir=asc',
+            url: '/api/v1/users?skip=0&take=2&orderBy=name&orderDir=asc',
             headers: { authorization: adminToken },
         });
 
