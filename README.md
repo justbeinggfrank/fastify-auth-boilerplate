@@ -16,7 +16,7 @@ A boilerplate backend app using **Fastify**, **TypeScript**, **MySQL**, **Prisma
 - [@prisma/client](https://github.com/prisma/prisma)
 - [mysql2](https://github.com/sidorares/node-mysql2)
 - [nodemailer](https://github.com/nodemailer/nodemailer)
-- [bcrypt](https://github.com/kelektiv/node.bcrypt.js)
+- [argon2](https://github.com/ranisalt/node-argon2)
 - [dotenv](https://github.com/motdotla/dotenv)
 - [@fastify/cors](https://github.com/fastify/fastify-cors)
 

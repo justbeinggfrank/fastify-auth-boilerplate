@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { prisma } from '../../prisma/client';
-import bcrypt from 'bcrypt';
+import argon2 from 'argon2';
 import { sendMail } from '../../utils/v1/mailer';
 import { z } from 'zod';
 import { getJwtInstance } from '../../utils/v1/jwt-instance';
@@ -43,7 +43,7 @@ export const authController = {
       return reply.status(400).send({ message: 'Email already in use' });
     }
 
-    const hashed = await bcrypt.hash(password, 10);
+    const hashed = await argon2.hash(password);
     const user = await prisma.user.create({
       data: { name, email, password: hashed },
     });
@@ -67,7 +67,7 @@ export const authController = {
       return reply.code(403).send({ message: 'Account is inactive' });
     }
 
-    const isValid = await bcrypt.compare(password, user.password);
+    const isValid = await argon2.verify(user.password, password);
     if (!isValid) return reply.code(401).send({ message: 'Invalid credentials' });
 
     const jwt = getJwtInstance(request);
@@ -114,12 +114,12 @@ export const authController = {
       return reply.code(404).send({ message: 'User not found' });
     }
 
-    const isValid = await bcrypt.compare(oldPassword, user.password);
+    const isValid = await argon2.verify(user.password, oldPassword);
     if (!isValid) {
       return reply.code(400).send({ message: 'Old password is incorrect' });
     }
 
-    const hashed = await bcrypt.hash(newPassword, 10);
+    const hashed = await argon2.hash(newPassword);
     await prisma.user.update({
       where: { id: userId },
       data: { password: hashed },
@@ -179,7 +179,7 @@ export const authController = {
         return reply.code(400).send({ message: 'Invalid reset token' });
       }
 
-      const hashed = await bcrypt.hash(newPassword, 10);
+      const hashed = await argon2.hash(newPassword);
       await prisma.user.update({
         where: { id: Number(payload.id) },
         data: { password: hashed },

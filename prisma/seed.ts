@@ -1,12 +1,12 @@
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
+import argon2 from 'argon2';
 
 const prisma = new PrismaClient();
 
 async function main() {
-    const superAdminPassword = await bcrypt.hash('superadmin@gmail.com', 10);
-    const adminPassword = await bcrypt.hash('admin@gmail.com', 10);
-    const userPassword = await bcrypt.hash('user@gmail.com', 10);
+    const superAdminPassword = await argon2.hash('superadmin@gmail.com');
+    const adminPassword = await argon2.hash('admin@gmail.com');
+    const userPassword = await argon2.hash('user@gmail.com');
 
     await prisma.user.createMany({
         data: [
