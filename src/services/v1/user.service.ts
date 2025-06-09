@@ -1,16 +1,6 @@
 import { prisma } from '../../prisma/client';
 
 export const userService = {
-  // Get all users
-  getAllUsers: async () => {
-    try {
-      const users = await prisma.user.findMany();
-      return [users, null];
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      return [null, error];
-    }
-  },
   getSingleUser: async (id: string) => {
     try {
       const user = await prisma.user.findUnique({ where: { id: Number(id) } });
