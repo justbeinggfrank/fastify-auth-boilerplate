@@ -1,8 +1,8 @@
 import Fastify, { FastifyInstance } from 'fastify';
-import { userRoutes } from './routes/v1/users';
-import jwtPlugin from './plugins/jwt';
+import { userRoutes } from './routes/v1/users.router';
+import jwtPlugin from './plugins/jwt.plugin';
 import 'dotenv/config';
-import { authRoutes } from './routes/v1/auth';
+import { authRoutes } from './routes/v1/auth.router';
 import fastifyQs from 'fastify-qs';
 import fastifyRateLimit from '@fastify/rate-limit';
 import fastifyHelmet from '@fastify/helmet';

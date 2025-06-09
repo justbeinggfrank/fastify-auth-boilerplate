@@ -3,7 +3,7 @@ import { prisma } from '../../prisma/client';
 import bcrypt from 'bcrypt';
 import { sendMail } from '../../utils/v1/mailer';
 import { z } from 'zod';
-import { getJwtInstance } from '../../utils/v1/helper';
+import { getJwtInstance } from '../../utils/v1/jwt-instance';
 
 const registerSchema = z.object({
   name: z.string().min(1).max(100).trim(),
