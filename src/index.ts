@@ -9,7 +9,11 @@ import fastifyHelmet from '@fastify/helmet';
 import fastifyCors from '@fastify/cors';
 
 const loggerLevel =
-  process.env.APP_ENV === 'production' ? 'info' : process.env.APP_ENV === 'test' ? 'warn' : 'debug';
+  process.env.APP_ENV === 'production'
+    ? 'warn'
+    : process.env.APP_ENV === 'test'
+      ? 'error'
+      : 'debug';
 
 export const app: FastifyInstance = Fastify({
   logger: {
