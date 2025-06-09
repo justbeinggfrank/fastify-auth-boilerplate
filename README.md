@@ -64,6 +64,8 @@ npm run format     # Format code using Prettier
 - Limited Payload Size
 - Centralized Error Handling: used a global error handler to catch and format errors consistently.
 - Input Validation & Sanitization using zod
+- Pagination for List Endpoints
+
 ---
 
 ## 📁 Project Structure
@@ -89,7 +91,6 @@ tests/
 
 ## 🔨 Todo
 - Monitoring: use Datadog
-- Pagination for List Endpoints: Paginate endpoints that return lists to avoid performance issues.
 
 ---
 
