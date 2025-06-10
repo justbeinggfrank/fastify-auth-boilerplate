@@ -4,7 +4,7 @@ CREATE TABLE `User` (
     `name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
-    `role` ENUM('user', 'admin', 'superadmin') NOT NULL DEFAULT 'USER',
+    `role` VARCHAR(50) NOT NULL DEFAULT 'user',
     `isActive` BOOLEAN NOT NULL DEFAULT TRUE,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
