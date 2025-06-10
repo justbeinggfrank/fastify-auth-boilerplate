@@ -107,6 +107,7 @@ tests/
 npx prisma migrate dev --name <migration_name>  # Create a migration file
 npx prisma migrate dev                          # Run migration
 npx prisma generate                             # Generate Prisma client
+npm run seed                                    # Run seeder
 ```
 
 ---

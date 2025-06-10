@@ -11,7 +11,7 @@ import fastifyCors from '@fastify/cors';
 const loggerLevel =
   process.env.APP_ENV === 'production'
     ? 'warn'
-    : process.env.APP_ENV === 'test'
+    : process.env.APP_ENV === 'sandbox'
       ? 'error'
       : 'debug';
 
